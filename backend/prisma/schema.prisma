@@ -1,0 +1,150 @@
+// Gemini Web QA Tool - Database Schema
+// Feature: 001-gemini-web-qa-tool
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// PRD (Product Requirements Document)
+// FR-001: PRD file upload and parsing
+model Prd {
+  id           String   @id @default(uuid())
+  fileName     String
+  fileFormat   String   // "markdown" | "pdf"
+  uploadedAt   DateTime @default(now())
+  parsedText   String   @db.Text
+
+  // Relations
+  testCases    TestCase[]
+
+  @@map("prds")
+}
+
+// WebService (Target web service configuration)
+// FR-017: Secure credential storage
+model WebService {
+  id              String   @id @default(uuid())
+  name            String
+  url             String
+  loginUsername   String   // Encrypted
+  loginPassword   String   // Encrypted
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  testSessions    TestSession[]
+
+  @@map("web_services")
+}
+
+// TestCase (Test cases)
+// FR-002, FR-003, FR-004: Test case generation, augmentation, and CRUD
+model TestCase {
+  id              String   @id @default(uuid())
+  testId          String   @unique
+  description     String
+  expectedResult  String   @db.Text
+  source          String   // "prd_auto" | "ai_augmented" | "user_manual" | "imported"
+  isEdgeCase      Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Foreign Keys
+  prdId           String?
+  prd             Prd?     @relation(fields: [prdId], references: [id], onDelete: Cascade)
+
+  // Relations
+  testSteps       TestStep[]
+  testResults     TestResult[]
+
+  @@index([prdId])
+  @@index([createdAt])
+  @@map("test_cases")
+}
+
+// TestStep (Test execution steps)
+// FR-006: Step-by-step execution
+model TestStep {
+  id              String   @id @default(uuid())
+  stepNumber      Int
+  action          String   @db.Text
+  expectedOutcome String   @db.Text
+
+  // Foreign Keys
+  testCaseId      String
+  testCase        TestCase @relation(fields: [testCaseId], references: [id], onDelete: Cascade)
+
+  @@index([testCaseId, stepNumber])
+  @@map("test_steps")
+}
+
+// TestSession (Test execution session)
+// FR-021, FR-023, FR-024: Single session enforcement, 30-day retention
+model TestSession {
+  id                String    @id @default(uuid())
+  sessionId         String    @unique
+  startedAt         DateTime  @default(now())
+  completedAt       DateTime?
+  status            String    // "running" | "completed" | "failed" | "cancelled"
+  expiresAt         DateTime  // startedAt + 30 days
+
+  // Foreign Keys
+  webServiceId      String
+  webService        WebService @relation(fields: [webServiceId], references: [id], onDelete: Cascade)
+
+  // Relations
+  testResults       TestResult[]
+  qaReports         QaReport[]
+
+  @@index([sessionId])
+  @@index([startedAt])
+  @@index([expiresAt])
+  @@map("test_sessions")
+}
+
+// TestResult (Test execution results)
+// FR-006, FR-007: Result tracking and screenshot capture
+model TestResult {
+  id                String    @id @default(uuid())
+  status            String    // "success" | "failed" | "timeout" | "skipped"
+  failureReason     String?   @db.Text
+  screenshotPath    String?
+  executionTime     Int       // milliseconds
+  executedAt        DateTime  @default(now())
+
+  // Foreign Keys
+  testSessionId     String
+  testSession       TestSession @relation(fields: [testSessionId], references: [id], onDelete: Cascade)
+
+  testCaseId        String
+  testCase          TestCase @relation(fields: [testCaseId], references: [id], onDelete: Cascade)
+
+  @@index([testSessionId])
+  @@index([testCaseId])
+  @@index([executedAt])
+  @@map("test_results")
+}
+
+// QAReport (QA test reports)
+// FR-008, FR-009: Report generation (success rate, failed test details)
+model QaReport {
+  id                String   @id @default(uuid())
+  totalTests        Int
+  successCount      Int
+  failureCount      Int
+  successRate       Float
+  failedTestDetails Json     // Array of {testId, description, reason, screenshotPath}
+  generatedAt       DateTime @default(now())
+
+  // Foreign Keys
+  testSessionId     String   @unique
+  testSession       TestSession @relation(fields: [testSessionId], references: [id], onDelete: Cascade)
+
+  @@index([generatedAt])
+  @@map("qa_reports")
+}

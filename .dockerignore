@@ -1,0 +1,50 @@
+# Dependencies
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Build outputs
+dist/
+build/
+out/
+.next/
+
+# Environment
+.env*
+!.env.example
+
+# Logs
+*.log
+logs/
+
+# Testing
+coverage/
+.cache/
+test-results/
+playwright-report/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Documentation
+*.md
+!README.md
+
+# Temporary
+*.tmp
+.temp/
+.tmp/
+
+# Screenshots and uploads (keep structure, not files)
+backend/screenshots/*
+!backend/screenshots/.gitkeep
+backend/uploads/*
+!backend/uploads/.gitkeep
