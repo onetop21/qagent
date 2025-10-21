@@ -1,29 +1,280 @@
-# QAgent
+# Gemini Web QA Tool
 
-## 개요
+Gemini AI와 Playwright를 활용한 자동화된 웹 서비스 QA 테스팅 도구
 
-QAgent는 Gemini CLI 환경에 통합되어 QA 관련 작업을 자동화하고 능률화하기 위해 설계된 도구입니다. 이 프로젝트는 테스트 케이스 관리, 코드 포맷팅, QA 명령어 실행 등의 기능을 제공하여 개발 및 QA 프로세스의 효율성을 높이는 것을 목표로 합니다.
+## 주요 기능
 
-## 디렉토리 구조
+- 📝 **PRD 기반 테스트 생성**: Markdown/PDF PRD를 업로드하면 Gemini AI가 자동으로 테스트 케이스 생성
+- 🤖 **AI 증강 테스트**: 기존 테스트 케이스를 AI가 분석하여 edge case 추가
+- 🎭 **Playwright 자동화**: 실제 브라우저에서 테스트 자동 실행
+- 📊 **QA 리포트**: 테스트 결과를 자동으로 분석하여 리포트 생성
+- 🔒 **안전한 인증 정보 관리**: AES-256-GCM 암호화로 로그인 정보 보호
+- ⏰ **30일 데이터 보관**: 자동 데이터 정리로 스토리지 관리
 
-- **/gemini-extension**: Gemini 확장 프로그램의 핵심 파일들이 위치합니다.
-  - `gemini-extension.json`: 확장 프로그램의 설정 파일입니다.
-  - `commands/QA/*.toml`: `augment`, `formatting`, `run`, `testcase` 등 QA 관련 명령어들의 설정을 담고 있습니다.
-  - `templates/testcase_template.md`: 테스트 케이스 생성에 사용되는 템플릿입니다.
-- **/tests**: 테스트 관련 문서 및 파일들이 저장됩니다.
-  - `need_formatting.md`: 포맷팅이 필요한 문서 예시입니다.
-  - `PRD.md`: 제품 요구사항 문서(Product Requirements Document)입니다.
-- **/web-service-qa**: 웹 서비스 QA와 관련된 명령어 설정이 위치합니다.
+## 빠른 시작
 
-## 설치 방법
+### 1. 자동 실행 (권장)
 
 ```bash
-git clone https://github.com/onetop21/qagent.git
-cd qagent
+./start.sh
+```
+
+### 2. 수동 실행
+
+```bash
+# 1. PostgreSQL 시작
+docker-compose up -d
+
+# 2. 백엔드 실행
+cd backend
+npm install
+npx prisma migrate dev
+npm run start:dev
+
+# 3. 프론트엔드 실행 (새 터미널)
+cd frontend
+npm install
+npm run dev
+```
+
+### 3. 접속
+
+- **프론트엔드**: http://localhost:3001
+- **백엔드 API**: http://localhost:3000/api
+
+## 사전 요구사항
+
+- Node.js 20.x+
+- Docker & Docker Compose
+- Gemini API Key ([발급받기](https://makersuite.google.com/app/apikey))
+
+## 환경 설정
+
+### 백엔드 (.env)
+
+```bash
+cd backend
+# .env 파일이 이미 있습니다
+# GEMINI_API_KEY만 수정하세요
+```
+
+`backend/.env` 파일에서 다음을 수정:
+
+```env
+GEMINI_API_KEY="your-actual-api-key-here"
+```
+
+### 프론트엔드 (.env.local)
+
+이미 설정되어 있습니다. 변경 불필요.
+
+## 문서
+
+- 📖 [실행 가이드](RUNNING.md) - 상세한 실행 및 설정 방법
+- 🧪 [테스트 가이드](TESTING.md) - 테스트 실행 방법
+- 📝 [TDD 가이드](TEST_GUIDE.md) - 테스트 주도 개발 워크플로우
+
+## 기술 스택
+
+### 백엔드
+- NestJS 10 (Node.js 프레임워크)
+- Prisma ORM (PostgreSQL)
+- Gemini API (테스트 생성)
+- Playwright (브라우저 자동화)
+- Winston (로깅)
+- WebSocket (실시간 업데이트)
+
+### 프론트엔드
+- Next.js 14 (React 프레임워크)
+- TypeScript
+- TailwindCSS (스타일링)
+- SWR (데이터 페칭)
+- Socket.IO Client (실시간 통신)
+
+### 데이터베이스
+- PostgreSQL 15
+- Prisma Schema (7개 모델)
+
+## 프로젝트 구조
+
+```
+QAgent/
+├── backend/              # NestJS 백엔드
+│   ├── src/
+│   │   ├── modules/     # 비즈니스 로직 모듈
+│   │   │   ├── prd/
+│   │   │   ├── testcases/
+│   │   │   ├── webservices/
+│   │   │   ├── sessions/
+│   │   │   └── reports/
+│   │   ├── common/      # 공통 유틸리티
+│   │   └── prisma/      # Prisma 설정
+│   ├── test/
+│   │   └── templates/   # 테스트 템플릿
+│   └── prisma/
+│       └── schema.prisma
+├── frontend/            # Next.js 프론트엔드
+│   ├── app/            # App Router 페이지
+│   │   ├── prd/
+│   │   ├── testcases/
+│   │   ├── webservices/
+│   │   ├── sessions/
+│   │   └── reports/
+│   └── src/
+│       └── components/  # React 컴포넌트
+├── shared/             # 공유 타입
+└── specs/             # 기능 스펙 및 계획
+```
+
+## 개발 워크플로우
+
+### 1. 새 기능 개발
+
+```bash
+# 1. 브랜치 생성
+git checkout -b feature/new-feature
+
+# 2. 테스트 작성 (TDD)
+cd backend
+cp test/templates/service.spec.template.ts src/modules/mymodule/myservice.spec.ts
+npm test -- myservice.spec.ts
+
+# 3. 코드 구현
+# ... 코드 작성 ...
+
+# 4. 테스트 통과 확인
+npm test
+
+# 5. 커밋
+git add .
+git commit -m "feat: Add new feature"
+```
+
+### 2. 데이터베이스 스키마 변경
+
+```bash
+cd backend
+
+# 1. schema.prisma 수정
+# 2. 마이그레이션 생성
+npx prisma migrate dev --name add_new_field
+
+# 3. Prisma Client 재생성
+npx prisma generate
+```
+
+### 3. 테스트 실행
+
+```bash
+# 백엔드
+cd backend
+npm test              # 단위 테스트
+npm run test:e2e      # E2E 테스트
+npm run test:cov      # 커버리지
+
+# 프론트엔드
+cd frontend
+npm test              # 컴포넌트 테스트
+npm run test:coverage # 커버리지
 ```
 
 ## 사용 방법
 
-이 프로젝트는 Gemini CLI 확장으로 실행되도록 설계되었습니다. Gemini CLI 환경에서 `gext` 명령어를 통해 등록된 QA 관련 커맨드를 사용할 수 있습니다.
+### 1단계: PRD 업로드
+- http://localhost:3001/prd 접속
+- Markdown 또는 PDF PRD 업로드
+- Gemini AI가 자동으로 테스트 케이스 생성 (5-10개)
 
-각 명령어 (예: `formatting`, `run`)는 `*.toml` 설정 파일에 정의된 동작을 수행합니다.
+### 2단계: 테스트 케이스 확인
+- http://localhost:3001/testcases 접속
+- 생성된 테스트 케이스 확인
+- 필요시 AI 증강으로 edge case 추가
+
+### 3단계: 웹 서비스 설정
+- http://localhost:3001/webservices 접속
+- 테스트할 웹 서비스 URL 및 로그인 정보 입력
+- 암호화되어 안전하게 저장
+
+### 4단계: 테스트 실행
+- http://localhost:3001/sessions 접속
+- 웹 서비스 선택
+- 실행할 테스트 케이스 선택
+- "Start Test Session" 클릭
+- 실시간으로 진행 상황 확인
+
+### 5단계: 리포트 확인
+- 테스트 완료 후 자동으로 리포트 페이지로 이동
+- 성공률, 실패 원인, 스크린샷 확인
+
+## 문제 해결
+
+### Docker 연결 안 됨
+```bash
+# WSL2에서 Docker Desktop 통합 활성화
+# Settings > Resources > WSL Integration > Ubuntu 활성화
+# 또는 PostgreSQL 직접 설치
+```
+
+### 포트 충돌
+```bash
+# 3000 포트 사용 중인 프로세스 확인
+lsof -i :3000
+# 종료 후 재시작
+```
+
+### 마이그레이션 오류
+```bash
+cd backend
+npx prisma migrate reset
+npx prisma migrate dev
+```
+
+자세한 문제 해결은 [RUNNING.md](RUNNING.md) 참조
+
+## 애플리케이션 종료
+
+```bash
+./stop.sh
+```
+
+또는:
+
+```bash
+# Ctrl+C로 프로세스 종료
+# Docker 컨테이너 종료
+docker-compose down
+```
+
+## 개발 상태
+
+현재 MVP (Phase 3 - User Story 1) 완료:
+- ✅ PRD 업로드 및 파싱
+- ✅ Gemini AI 테스트 생성
+- ✅ 웹 서비스 설정
+- ✅ Playwright 테스트 실행
+- ✅ QA 리포트 생성
+- ✅ 30일 데이터 보관
+
+다음 단계 (Phase 4-7):
+- ⏳ AI 증강 UI
+- ⏳ 실시간 모니터링 (WebSocket)
+- ⏳ 파일 임포트/익스포트
+- ⏳ 성능 최적화
+
+## 라이선스
+
+ISC
+
+## 기여
+
+이슈 및 PR 환영합니다!
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'feat: Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 연락처
+
+프로젝트 링크: https://github.com/onetop21/qagent
