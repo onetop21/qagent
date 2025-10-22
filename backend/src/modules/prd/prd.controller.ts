@@ -6,6 +6,7 @@ import {
   UseInterceptors,
   UploadedFile,
   BadRequestException,
+  Body,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { PrdService } from './prd.service';
@@ -23,12 +24,16 @@ export class PrdController {
   @UseInterceptors(FileInterceptor('file'))
   async uploadPrd(
     @UploadedFile() file: Express.Multer.File,
+    @Body('projectId') projectId: string,
   ): Promise<PrdResponseDto> {
     if (!file) {
       throw new BadRequestException('File is required');
     }
+    if (!projectId) {
+      throw new BadRequestException('projectId is required');
+    }
 
-    return this.prdService.create(file);
+    return this.prdService.create(file, projectId);
   }
 
   /**

@@ -44,7 +44,12 @@ export class ReportsService {
     const successCount = session.testResults.filter(
       (r) => r.status === 'success',
     ).length;
-    const failureCount = totalTests - successCount;
+    const timeoutCount = session.testResults.filter(
+      (r) => r.status === 'timeout',
+    ).length;
+    const failureCount = session.testResults.filter(
+      (r) => r.status === 'failed',
+    ).length;
     const successRate = totalTests > 0 ? (successCount / totalTests) * 100 : 0;
 
     // Get failed test details
@@ -70,6 +75,7 @@ export class ReportsService {
           totalTests,
           successCount,
           failureCount,
+          timeoutCount,
           successRate,
           failedTestDetails: failedTestDetails as any,
         },
@@ -81,8 +87,10 @@ export class ReportsService {
           totalTests,
           successCount,
           failureCount,
+          timeoutCount,
           successRate,
           failedTestDetails: failedTestDetails as any,
+          projectId: session.projectId,
           testSessionId: sessionId,
         },
       });

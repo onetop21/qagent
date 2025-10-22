@@ -19,23 +19,37 @@ export class SessionsService {
 
   /**
    * Create and start test session
-   * FR-021: Enforce single active session
+   * FR-021: Enforce project-level session lock and global concurrent session limit
    */
   async create(dto: CreateSessionDto): Promise<SessionResponseDto> {
-    // FR-021: Check for active sessions
-    const activeSession = await this.prisma.testSession.findFirst({
+    // Check for active session in this project (project-level lock)
+    const projectActiveSession = await this.prisma.testSession.findFirst({
+      where: {
+        projectId: dto.projectId,
+        status: 'running',
+      },
+    });
+
+    if (projectActiveSession) {
+      throw new BadRequestException(
+        `This project already has a running test session (${projectActiveSession.sessionId}). Please wait for it to complete or cancel it.`,
+      );
+    }
+
+    // Check global concurrent session limit (max 3)
+    const globalRunningSessions = await this.prisma.testSession.count({
       where: {
         status: 'running',
       },
     });
 
-    if (activeSession) {
+    if (globalRunningSessions >= 3) {
       throw new BadRequestException(
-        'Another test session is already running. Please wait for it to complete or cancel it.',
+        'Maximum concurrent sessions (3) reached. Please wait for an existing session to complete or cancel one.',
       );
     }
 
-    this.logger.log('Creating new test session...');
+    this.logger.log(`Creating new test session for project: ${dto.projectId}...`);
 
     // Generate session ID
     const sessionId = `SESSION-${Date.now()}`;
@@ -50,6 +64,7 @@ export class SessionsService {
         sessionId,
         status: 'running',
         expiresAt,
+        projectId: dto.projectId,
         webServiceId: dto.webServiceId,
       },
     });
@@ -250,6 +265,24 @@ export class SessionsService {
     });
 
     return sessions.map(this.mapToResponseDto);
+  }
+
+  /**
+   * Get active session for a project
+   */
+  async getActiveSession(projectId: string): Promise<SessionResponseDto | null> {
+    const session = await this.prisma.testSession.findFirst({
+      where: {
+        projectId,
+        status: 'running',
+      },
+    });
+
+    if (!session) {
+      return null;
+    }
+
+    return this.mapToResponseDto(session);
   }
 
   /**

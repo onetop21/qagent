@@ -3,6 +3,10 @@ import { IsNotEmpty, IsString } from 'class-validator';
 export class CreatePrdDto {
   @IsNotEmpty()
   @IsString()
+  projectId: string;
+
+  @IsNotEmpty()
+  @IsString()
   fileName: string;
 
   @IsNotEmpty()

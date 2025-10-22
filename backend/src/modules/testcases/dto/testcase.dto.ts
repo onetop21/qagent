@@ -17,6 +17,10 @@ export class TestStepDto {
 export class CreateTestCaseDto {
   @IsNotEmpty()
   @IsString()
+  projectId: string;
+
+  @IsNotEmpty()
+  @IsString()
   testId: string;
 
   @IsNotEmpty()
