@@ -27,6 +27,7 @@ export class WebServicesService {
 
     const webService = await this.prisma.webService.create({
       data: {
+        projectId: dto.projectId,
         name: dto.name,
         url: dto.url,
         loginUsername: encryptedUsername,

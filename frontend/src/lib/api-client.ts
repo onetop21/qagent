@@ -36,7 +36,13 @@ class ApiClient {
         throw new Error(error.message || 'API request failed');
       }
 
-      return await response.json();
+      // Handle empty response (e.g., 204 No Content or null response)
+      const text = await response.text();
+      if (!text || text.trim() === '') {
+        return null;
+      }
+
+      return JSON.parse(text);
     } catch (error) {
       console.error('API request error:', error);
       throw error;
@@ -67,6 +73,18 @@ class ApiClient {
     return this.request<T>(endpoint, {
       ...options,
       method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async patch<T>(
+    endpoint: string,
+    data?: any,
+    options?: FetchOptions,
+  ): Promise<T> {
+    return this.request<T>(endpoint, {
+      ...options,
+      method: 'PATCH',
       body: JSON.stringify(data),
     });
   }

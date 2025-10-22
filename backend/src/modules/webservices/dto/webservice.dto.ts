@@ -3,6 +3,10 @@ import { IsNotEmpty, IsString, IsUrl } from 'class-validator';
 export class CreateWebServiceDto {
   @IsNotEmpty()
   @IsString()
+  projectId: string;
+
+  @IsNotEmpty()
+  @IsString()
   name: string;
 
   @IsNotEmpty()

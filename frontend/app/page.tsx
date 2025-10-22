@@ -1,101 +1,238 @@
-import Image from "next/image";
-
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
+    <div className="px-4 py-6">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          Gemini Web QA Tool
+        </h1>
+        <p className="text-gray-600">
+          AI 기반 자동화 웹 서비스 QA 테스팅 플랫폼
+        </p>
+      </div>
+
+      {/* Quick Start Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <a
+          href="/prd"
+          className="block p-6 bg-white border border-gray-200 rounded-lg shadow hover:shadow-lg transition-shadow"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold text-gray-900">
+              📝 PRD 업로드
+            </h2>
+            <span className="text-2xl">→</span>
+          </div>
+          <p className="text-gray-600 text-sm">
+            Markdown 또는 PDF PRD를 업로드하고 Gemini AI가 자동으로 테스트 케이스를 생성합니다.
+          </p>
+          <div className="mt-4 text-blue-600 text-sm font-medium">
+            시작하기 →
+          </div>
+        </a>
+
+        <a
+          href="/testcases"
+          className="block p-6 bg-white border border-gray-200 rounded-lg shadow hover:shadow-lg transition-shadow"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold text-gray-900">
+              ✅ 테스트 케이스
+            </h2>
+            <span className="text-2xl">→</span>
+          </div>
+          <p className="text-gray-600 text-sm">
+            생성된 테스트 케이스를 확인하고 수정하거나 수동으로 추가할 수 있습니다.
+          </p>
+          <div className="mt-4 text-blue-600 text-sm font-medium">
+            확인하기 →
+          </div>
+        </a>
+
+        <a
+          href="/webservices"
+          className="block p-6 bg-white border border-gray-200 rounded-lg shadow hover:shadow-lg transition-shadow"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold text-gray-900">
+              🔧 웹 서비스
+            </h2>
+            <span className="text-2xl">→</span>
+          </div>
+          <p className="text-gray-600 text-sm">
+            테스트할 웹 서비스를 설정하고 로그인 정보를 안전하게 저장합니다.
+          </p>
+          <div className="mt-4 text-blue-600 text-sm font-medium">
+            설정하기 →
+          </div>
+        </a>
+
+        <a
+          href="/sessions"
+          className="block p-6 bg-white border border-gray-200 rounded-lg shadow hover:shadow-lg transition-shadow"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold text-gray-900">
+              🎯 테스트 실행
+            </h2>
+            <span className="text-2xl">→</span>
+          </div>
+          <p className="text-gray-600 text-sm">
+            Playwright로 실제 브라우저에서 테스트를 실행하고 결과를 확인합니다.
+          </p>
+          <div className="mt-4 text-blue-600 text-sm font-medium">
+            실행하기 →
+          </div>
+        </a>
+      </div>
+
+      {/* Features */}
+      <div className="bg-white border border-gray-200 rounded-lg p-6 mb-8">
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">주요 기능</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="flex items-start">
+            <span className="text-2xl mr-3">🤖</span>
+            <div>
+              <h3 className="font-semibold text-gray-900 mb-1">
+                AI 테스트 생성
+              </h3>
+              <p className="text-gray-600 text-sm">
+                Gemini AI가 PRD를 분석하여 자동으로 5-10개의 테스트 케이스를 생성합니다.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-start">
+            <span className="text-2xl mr-3">🎭</span>
+            <div>
+              <h3 className="font-semibold text-gray-900 mb-1">
+                브라우저 자동화
+              </h3>
+              <p className="text-gray-600 text-sm">
+                Playwright를 사용하여 실제 브라우저에서 테스트를 자동 실행합니다.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-start">
+            <span className="text-2xl mr-3">📊</span>
+            <div>
+              <h3 className="font-semibold text-gray-900 mb-1">
+                실시간 모니터링
+              </h3>
+              <p className="text-gray-600 text-sm">
+                테스트 진행 상황을 실시간으로 모니터링하고 결과를 확인합니다.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-start">
+            <span className="text-2xl mr-3">🔒</span>
+            <div>
+              <h3 className="font-semibold text-gray-900 mb-1">
+                보안 인증 관리
+              </h3>
+              <p className="text-gray-600 text-sm">
+                AES-256-GCM 암호화로 로그인 정보를 안전하게 보관합니다.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-start">
+            <span className="text-2xl mr-3">📈</span>
+            <div>
+              <h3 className="font-semibold text-gray-900 mb-1">
+                QA 리포트
+              </h3>
+              <p className="text-gray-600 text-sm">
+                테스트 결과를 자동으로 분석하여 상세한 리포트를 생성합니다.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-start">
+            <span className="text-2xl mr-3">⏰</span>
+            <div>
+              <h3 className="font-semibold text-gray-900 mb-1">
+                자동 데이터 관리
+              </h3>
+              <p className="text-gray-600 text-sm">
+                30일 데이터 보관 정책으로 스토리지를 자동으로 관리합니다.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Quick Guide */}
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+        <h2 className="text-xl font-bold text-gray-900 mb-4">빠른 시작 가이드</h2>
+        <ol className="space-y-3">
+          <li className="flex items-start">
+            <span className="flex items-center justify-center w-6 h-6 bg-blue-600 text-white rounded-full text-sm font-bold mr-3 mt-0.5">
+              1
+            </span>
+            <div>
+              <span className="font-semibold text-gray-900">PRD 업로드</span>
+              <p className="text-gray-600 text-sm">
+                Markdown 또는 PDF 형식의 PRD 문서를 업로드합니다.
+              </p>
+            </div>
           </li>
-          <li>Save and see your changes instantly.</li>
+          <li className="flex items-start">
+            <span className="flex items-center justify-center w-6 h-6 bg-blue-600 text-white rounded-full text-sm font-bold mr-3 mt-0.5">
+              2
+            </span>
+            <div>
+              <span className="font-semibold text-gray-900">테스트 케이스 확인</span>
+              <p className="text-gray-600 text-sm">
+                AI가 생성한 테스트 케이스를 검토하고 필요시 수정합니다.
+              </p>
+            </div>
+          </li>
+          <li className="flex items-start">
+            <span className="flex items-center justify-center w-6 h-6 bg-blue-600 text-white rounded-full text-sm font-bold mr-3 mt-0.5">
+              3
+            </span>
+            <div>
+              <span className="font-semibold text-gray-900">웹 서비스 설정</span>
+              <p className="text-gray-600 text-sm">
+                테스트할 웹 서비스 URL과 로그인 정보를 입력합니다.
+              </p>
+            </div>
+          </li>
+          <li className="flex items-start">
+            <span className="flex items-center justify-center w-6 h-6 bg-blue-600 text-white rounded-full text-sm font-bold mr-3 mt-0.5">
+              4
+            </span>
+            <div>
+              <span className="font-semibold text-gray-900">테스트 실행</span>
+              <p className="text-gray-600 text-sm">
+                웹 서비스와 테스트 케이스를 선택하여 테스트를 실행합니다.
+              </p>
+            </div>
+          </li>
+          <li className="flex items-start">
+            <span className="flex items-center justify-center w-6 h-6 bg-blue-600 text-white rounded-full text-sm font-bold mr-3 mt-0.5">
+              5
+            </span>
+            <div>
+              <span className="font-semibold text-gray-900">리포트 확인</span>
+              <p className="text-gray-600 text-sm">
+                생성된 QA 리포트에서 성공률과 실패 원인을 분석합니다.
+              </p>
+            </div>
+          </li>
         </ol>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
+        <div className="mt-6 pt-6 border-t border-blue-200">
           <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="/prd"
+            className="inline-flex items-center justify-center w-full bg-blue-600 text-white py-3 px-6 rounded-md hover:bg-blue-700 transition-colors font-medium"
           >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
+            지금 시작하기 →
           </a>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
     </div>
   );
 }

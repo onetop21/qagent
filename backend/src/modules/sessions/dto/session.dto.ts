@@ -3,6 +3,10 @@ import { IsNotEmpty, IsString, IsArray } from 'class-validator';
 export class CreateSessionDto {
   @IsNotEmpty()
   @IsString()
+  projectId: string;
+
+  @IsNotEmpty()
+  @IsString()
   webServiceId: string;
 
   @IsNotEmpty()

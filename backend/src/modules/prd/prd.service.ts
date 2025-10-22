@@ -63,9 +63,10 @@ export class PrdService {
   /**
    * Create PRD record in database
    * @param file - Uploaded file
+   * @param projectId - Project ID
    * @returns Created PRD
    */
-  async create(file: Express.Multer.File): Promise<PrdResponseDto> {
+  async create(file: Express.Multer.File, projectId: string): Promise<PrdResponseDto> {
     const parsedText = await this.parseFile(file);
     const fileFormat = this.detectFileFormat(file.originalname);
 
@@ -74,6 +75,7 @@ export class PrdService {
         fileName: file.originalname,
         fileFormat,
         parsedText,
+        projectId,
       },
     });
 

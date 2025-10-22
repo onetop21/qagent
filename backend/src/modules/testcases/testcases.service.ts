@@ -51,6 +51,7 @@ export class TestCasesService {
           expectedResult: tc.expectedResult,
           source: 'prd_auto',
           isEdgeCase: false,
+          projectId: prd.projectId,
           prdId,
           testSteps: {
             create: tc.steps.map((step) => ({
@@ -79,6 +80,15 @@ export class TestCasesService {
    */
   async augment(dto: AugmentTestCasesDto): Promise<TestCaseResponseDto[]> {
     this.logger.log(`Augmenting test cases for PRD: ${dto.prdId}, type: ${dto.type}`);
+
+    // Get PRD to get projectId
+    const prd = await this.prisma.prd.findUnique({
+      where: { id: dto.prdId },
+    });
+
+    if (!prd) {
+      throw new BadRequestException(`PRD with ID ${dto.prdId} not found`);
+    }
 
     // Get existing test cases
     const existingTestCases = await this.prisma.testCase.findMany({
@@ -119,6 +129,7 @@ export class TestCasesService {
           expectedResult: tc.expectedResult,
           source: 'ai_augmented',
           isEdgeCase: dto.type === 'edge_case',
+          projectId: prd.projectId,
           prdId: dto.prdId,
           testSteps: {
             create: tc.steps.map((step) => ({
@@ -152,6 +163,7 @@ export class TestCasesService {
         expectedResult: dto.expectedResult,
         source: 'user_manual',
         isEdgeCase: false,
+        projectId: dto.projectId,
         prdId: dto.prdId,
         testSteps: {
           create: dto.testSteps,

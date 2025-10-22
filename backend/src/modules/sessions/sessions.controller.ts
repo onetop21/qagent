@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Delete, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Body, Param, Query } from '@nestjs/common';
 import { SessionsService } from './sessions.service';
 import { CreateSessionDto, SessionResponseDto } from './dto/session.dto';
 
@@ -22,6 +22,17 @@ export class SessionsController {
   @Get()
   async findAll(): Promise<SessionResponseDto[]> {
     return this.sessionsService.findAll();
+  }
+
+  /**
+   * Get active session for a project
+   * GET /api/sessions/active?projectId=xxx
+   */
+  @Get('active')
+  async getActiveSession(
+    @Query('projectId') projectId: string,
+  ): Promise<SessionResponseDto | null> {
+    return this.sessionsService.getActiveSession(projectId);
   }
 
   /**

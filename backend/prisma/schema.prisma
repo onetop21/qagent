@@ -10,6 +10,27 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Project (Project container for all related entities)
+model Project {
+  id          String   @id @default(uuid())
+  name        String
+  description String?  @db.Text
+  status      String   @default("active") // "active" | "completed" | "archived"
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  prds         Prd[]
+  webServices  WebService[]
+  testCases    TestCase[]
+  testSessions TestSession[]
+  qaReports    QaReport[]
+
+  @@index([status])
+  @@index([createdAt])
+  @@map("projects")
+}
+
 // PRD (Product Requirements Document)
 // FR-001: PRD file upload and parsing
 model Prd {
@@ -19,9 +40,14 @@ model Prd {
   uploadedAt   DateTime @default(now())
   parsedText   String   @db.Text
 
+  // Foreign Keys
+  projectId    String
+  project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
   // Relations
   testCases    TestCase[]
 
+  @@index([projectId])
   @@map("prds")
 }
 
@@ -36,9 +62,14 @@ model WebService {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
+  // Foreign Keys
+  projectId       String
+  project         Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
   // Relations
   testSessions    TestSession[]
 
+  @@index([projectId])
   @@map("web_services")
 }
 
@@ -55,6 +86,9 @@ model TestCase {
   updatedAt       DateTime @updatedAt
 
   // Foreign Keys
+  projectId       String
+  project         Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
   prdId           String?
   prd             Prd?     @relation(fields: [prdId], references: [id], onDelete: Cascade)
 
@@ -62,6 +96,7 @@ model TestCase {
   testSteps       TestStep[]
   testResults     TestResult[]
 
+  @@index([projectId])
   @@index([prdId])
   @@index([createdAt])
   @@map("test_cases")
@@ -94,6 +129,9 @@ model TestSession {
   expiresAt         DateTime  // startedAt + 30 days
 
   // Foreign Keys
+  projectId         String
+  project           Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
   webServiceId      String
   webService        WebService @relation(fields: [webServiceId], references: [id], onDelete: Cascade)
 
@@ -101,6 +139,8 @@ model TestSession {
   testResults       TestResult[]
   qaReports         QaReport[]
 
+  @@index([projectId])
+  @@index([projectId, status])
   @@index([sessionId])
   @@index([startedAt])
   @@index([expiresAt])
@@ -137,14 +177,19 @@ model QaReport {
   totalTests        Int
   successCount      Int
   failureCount      Int
+  timeoutCount      Int      @default(0)
   successRate       Float
   failedTestDetails Json     // Array of {testId, description, reason, screenshotPath}
   generatedAt       DateTime @default(now())
 
   // Foreign Keys
+  projectId         String
+  project           Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
   testSessionId     String   @unique
   testSession       TestSession @relation(fields: [testSessionId], references: [id], onDelete: Cascade)
 
+  @@index([projectId])
   @@index([generatedAt])
   @@map("qa_reports")
 }
